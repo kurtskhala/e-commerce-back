@@ -18,13 +18,13 @@ export class AuthService {
     if (existUser) throw new BadRequestException('User already exists');
     const hashedPass = await bcrypt.hash(signUpDto.password, 10);
     await this.usersService.create({ ...signUpDto, password: hashedPass });
-    return 'user created successfully';
+    return { message: 'User created successfully' };
   }
 
   async signIn(signInDto: SignInDto) {
     const existUser = await this.usersService.findOneByEmail(signInDto.email);
     console.log(existUser);
-        
+
     if (!existUser)
       throw new BadRequestException('Email or passwor is not correct');
     const isPassEqual = await bcrypt.compare(
