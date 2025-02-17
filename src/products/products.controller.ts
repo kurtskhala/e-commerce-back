@@ -16,13 +16,12 @@ import { AuthGuard } from 'src/auth/auth.guard';
 import { IsValidMongoId } from 'src/users/dto/isValidMongoId.dto';
 import { IsAdminGuard } from 'src/auth/isAdmin.guard';
 
-@UseGuards(AuthGuard, IsAdminGuard)
 @Controller('products')
 export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Post()
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, IsAdminGuard)
   create(@Body() createProductDto: CreateProductDto) {
     return this.productsService.create(createProductDto);
   }
@@ -38,6 +37,7 @@ export class ProductsController {
   }
 
   @Patch(':id')
+  @UseGuards(AuthGuard, IsAdminGuard)
   update(
     @Param() param: IsValidMongoId,
     @Body() updatePostDto: UpdateProductDto,
@@ -47,7 +47,7 @@ export class ProductsController {
   }
 
   @Delete(':id')
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, IsAdminGuard)  
   remove(@Param() params) {
     return this.productsService.remove(params.id);
   }
