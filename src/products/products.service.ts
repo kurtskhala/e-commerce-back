@@ -18,10 +18,10 @@ export class ProductsService {
   ) {}
 
   async create(createProductDto: CreateProductDto) {
-    const post = await this.productModel.create({
+    const product = await this.productModel.create({
       ...createProductDto,
     });
-    return post;
+    return product;
   }
 
   findAll() {
@@ -54,7 +54,7 @@ export class ProductsService {
     }
 
     const deletedPost = await this.productModel.findByIdAndDelete(id);
-    return { message: 'post deleted', data: deletedPost };
+    return { message: 'product deleted', data: deletedPost };
   }
 
   uploadImage(filePath, file) {
