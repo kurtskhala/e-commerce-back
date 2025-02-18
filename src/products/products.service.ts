@@ -8,10 +8,12 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Product } from './schema/product.schema';
 import { isValidObjectId, Model } from 'mongoose';
+import { AwsS3Service } from 'src/aws-s3/aws-s3.service';
 
 @Injectable()
 export class ProductsService {
   constructor(
+    private awsS3Service: AwsS3Service,
     @InjectModel(Product.name) private productModel: Model<Product>,
   ) {}
 
@@ -41,7 +43,7 @@ export class ProductsService {
   update(id, updateProductDto: UpdateProductDto) {
     return this.productModel.findByIdAndUpdate(id, updateProductDto, {
       new: true,
-    });;
+    });
   }
 
   async remove(id: number) {
@@ -53,5 +55,17 @@ export class ProductsService {
 
     const deletedPost = await this.productModel.findByIdAndDelete(id);
     return { message: 'post deleted', data: deletedPost };
+  }
+
+  uploadImage(filePath, file) {
+    return this.awsS3Service.uploadImage(filePath, file);
+  }
+
+  getImage(fileId) {
+    return this.awsS3Service.getImageByFileId(fileId);
+  }
+
+  deleteImage(fileId) {
+    return this.awsS3Service.deleteImageByFileId(fileId);
   }
 }

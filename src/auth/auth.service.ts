@@ -4,7 +4,6 @@ import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
 import { SignInDto } from './dto/sign-in.dto';
 import { JwtService } from '@nestjs/jwt';
-import { log } from 'console';
 
 @Injectable()
 export class AuthService {
@@ -16,7 +15,11 @@ export class AuthService {
   async signUp(signUpDto: SignUpDto) {
     const existUser = await this.usersService.findOneByEmail(signUpDto.email);
     if (existUser) throw new BadRequestException('User already exists');
-    const hashedPass = await bcrypt.hash(signUpDto.password, 10);
+    const hashedPass: string = await (
+      bcrypt as unknown as {
+        hash: (password: string, salt: number) => Promise<string>;
+      }
+    ).hash(signUpDto.password, 10);
     await this.usersService.create({ ...signUpDto, password: hashedPass });
     return { message: 'User created successfully' };
   }
@@ -27,10 +30,10 @@ export class AuthService {
 
     if (!existUser)
       throw new BadRequestException('Email or passwor is not correct');
-    const isPassEqual = await bcrypt.compare(
+    const isPassEqual: boolean = (await bcrypt.compare(
       signInDto.password,
       existUser.password,
-    );
+    )) as boolean;
     if (!isPassEqual)
       throw new BadRequestException('Email or passwor is not correct');
     const payload = {
