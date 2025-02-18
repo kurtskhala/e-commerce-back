@@ -13,12 +13,20 @@ export class AwsS3Service {
   private s3;
   constructor() {
     this.bucketName = process.env.AWS_BUCKET_NAME;
+    const accessKeyId = process.env.AWS_ACCESS_KEY_ID;
+    const secretAccessKey = process.env.AWS_SECRET_ACCESS_KEY;
+    const region = process.env.AWS_REGION;
+
+    if (!accessKeyId || !secretAccessKey || !region) {
+      throw new Error('AWS credentials or region are not defined');
+    }
+
     this.s3 = new S3Client({
       credentials: {
-        accessKeyId: process.env.AWS_ACCESS_KEY,
-        secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
+        accessKeyId,
+        secretAccessKey,
       },
-      region: process.env.AWS_REGION,
+      region,
     });
   }
 
@@ -44,7 +52,7 @@ export class AwsS3Service {
     const command = new GetObjectCommand(config);
     const fileStream = await this.s3.send(command);
     if (fileStream.Body instanceof Readable) {
-      const chunks = [];
+      const chunks: Buffer[] = [];
       for await (const chunk of fileStream.Body) {
         chunks.push(chunk);
       }

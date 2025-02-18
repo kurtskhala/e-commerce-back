@@ -20,4 +20,6 @@ export class CreateProductDto {
   @IsNotEmpty()
   @IsString()
   image: string;
+
+  imageData?: any;
 }

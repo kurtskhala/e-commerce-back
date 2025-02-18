@@ -8,6 +8,8 @@ import {
   Delete,
   UseGuards,
   Req,
+  UseInterceptors,
+  UploadedFile,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -15,6 +17,8 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { AuthGuard } from 'src/auth/auth.guard';
 import { IsValidMongoId } from 'src/users/dto/isValidMongoId.dto';
 import { IsAdminGuard } from 'src/auth/isAdmin.guard';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { Multer } from 'multer';
 
 @Controller('products')
 export class ProductsController {
@@ -22,8 +26,17 @@ export class ProductsController {
 
   @Post()
   @UseGuards(AuthGuard, IsAdminGuard)
-  create(@Body() createProductDto: CreateProductDto) {
-    return this.productsService.create(createProductDto);
+  @UseInterceptors(FileInterceptor('image'))
+  async create(
+    @UploadedFile() avatar: Multer.File,
+    @Body() createProductDto: CreateProductDto,
+  ) {
+    const path = Math.random().toString().substring(2);
+    const filePath = `images/${path}`;
+    const imagePath = avatar
+      ? await this.productsService.uploadImage(filePath, avatar.buffer)
+      : '';
+    return this.productsService.create({...createProductDto, image: imagePath});
   }
 
   @Get()
@@ -42,12 +55,11 @@ export class ProductsController {
     @Param() param: IsValidMongoId,
     @Body() updatePostDto: UpdateProductDto,
   ) {
-    
     return this.productsService.update(param.id, updatePostDto);
   }
 
   @Delete(':id')
-  @UseGuards(AuthGuard, IsAdminGuard)  
+  @UseGuards(AuthGuard, IsAdminGuard)
   remove(@Param() params) {
     return this.productsService.remove(params.id);
   }

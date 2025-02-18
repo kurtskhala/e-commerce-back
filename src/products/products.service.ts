@@ -24,8 +24,32 @@ export class ProductsService {
     return product;
   }
 
-  findAll() {
-    return this.productModel.find();
+  async findAll() {
+    const products = await this.productModel.find();
+
+    const productsWithImages = await Promise.all(
+      products.map(async (product) => {
+        if (product.image) {
+          try {
+            const imageBase64 = await this.getImage(product.image);
+
+            const productObj = product.toObject();
+            productObj.imageData = imageBase64;
+
+            return productObj;
+          } catch (error) {
+            console.error(
+              `Failed to fetch image for product ${product._id}:`,
+              error,
+            );
+            return product.toObject();
+          }
+        }
+        return product.toObject();
+      }),
+    ); 
+
+    return productsWithImages;
   }
 
   async findOne(id) {

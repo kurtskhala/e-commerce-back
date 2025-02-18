@@ -3,12 +3,14 @@ import { ProductsService } from './products.service';
 import { ProductsController } from './products.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Product, ProductSchema } from './schema/product.schema';
+import { AwsS3Module } from 'src/aws-s3/aws-s3.module';
 
 @Module({
   controllers: [ProductsController],
   providers: [ProductsService],
   imports: [
     MongooseModule.forFeature([{ name: Product.name, schema: ProductSchema }]),
+    AwsS3Module,
   ],
   exports: [MongooseModule],
 })
