@@ -36,7 +36,10 @@ export class ProductsController {
     const imagePath = avatar
       ? await this.productsService.uploadImage(filePath, avatar.buffer)
       : '';
-    return this.productsService.create({...createProductDto, image: imagePath});
+    return this.productsService.create({
+      ...createProductDto,
+      image: imagePath,
+    });
   }
 
   @Get()

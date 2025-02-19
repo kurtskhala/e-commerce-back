@@ -47,21 +47,37 @@ export class ProductsService {
         }
         return product.toObject();
       }),
-    ); 
+    );
 
     return productsWithImages;
   }
 
   async findOne(id) {
-    if (!isValidObjectId(id))
+    if (!isValidObjectId(id)) {
       throw new BadGatewayException('Not valid id is provided');
+    }
 
     const product = await this.productModel.findById(id);
 
     if (!product) {
       throw new NotFoundException('Product not found');
     }
-    return product;
+
+    const productObj = product.toObject();
+
+    if (product.image) {
+      try {
+        const imageBase64 = await this.getImage(product.image);
+        productObj.imageData = imageBase64;
+      } catch (error) {
+        console.error(
+          `Failed to fetch image for product ${product._id}:`,
+          error,
+        );
+      }
+    }
+
+    return productObj;
   }
 
   update(id, updateProductDto: UpdateProductDto) {

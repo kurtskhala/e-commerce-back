@@ -15,6 +15,9 @@ export class Product {
   category: string;
 
   @Prop({ Type: String })
+  description: string;
+
+  @Prop({ Type: String })
   image: string;
 
   imageData?: any;
