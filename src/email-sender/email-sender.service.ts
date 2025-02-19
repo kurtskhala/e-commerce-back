@@ -9,32 +9,31 @@ import {
 export class EmailSenderService {
   constructor(private emailService: MailerService) {}
 
-  async sendTextToEmail(to, subject, text) {
+  async sendTextToEmail(to: string, subject: string, order: any) {
+    const orderDetailsHtml = `
+      <h2>Order Details</h2>
+      <p><strong>Date:</strong> ${new Date(order.date).toLocaleString()}</p>
+      <p><strong>Total:</strong> $${order.total}</p>
+      
+      <h3>Items:</h3>
+      <ul>
+        ${order.items
+          .map(
+            (item) => `
+          <li>${item.name}: ${item.quantity} x $${item.price}</li>
+        `,
+          )
+          .join('')}
+      </ul>
+      
+      <p>Thank you for your order!</p>
+    `;
+
     const options = {
-      from: 'Gita Back Course <ketigelovani@gmail.com>',
+      from: 'Store <nkurt17@freeuni.edu.ge>',
       to,
       subject,
-      text,
-    };
-
-    await this.emailService.sendMail(options);
-    return 'sent successfully';
-  }
-
-  async sendHtmlToEmail(to, subject) {
-    if (!to || !subject) throw new BadRequestException('not found ');
-    const html = `
-            <div>
-                <h1 style="color: red;">random</h1>
-                <a href='https://chess.com'>Click Here</a>
-            </div>
-        `;
-
-    const options = {
-      to,
-      from: 'Gita Back Course <ketigelovani@gmail.com>',
-      subject,
-      html,
+      html: orderDetailsHtml, // Use html instead of text for formatted emails
     };
 
     await this.emailService.sendMail(options);
