@@ -22,6 +22,9 @@ import { EmailSenderModule } from './email-sender/email-sender.module';
           user: process.env.EMAIL_USER,
           pass: process.env.EMAIL_PASS
         }
+      },
+      defaults: {
+        from: '"Your Store" <kurtskhalia99@gmail.com>',
       }
     }),
     AuthModule,

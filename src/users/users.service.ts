@@ -8,12 +8,14 @@ import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { isValidObjectId, Model } from 'mongoose';
 import { User } from './schema/user.schema';
 import { Product } from 'src/products/schema/product.schema';
+import { EmailSenderService } from 'src/email-sender/email-sender.service';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User.name) private userModel: Model<User>,
     @InjectModel(Product.name) private productModel: Model<Product>,
+    private emailSenderService: EmailSenderService,
   ) {}
 
   findAll() {
@@ -178,8 +180,6 @@ export class UsersService {
         throw new NotFoundException(`Product ${cartItem.productId} not found`);
       }
 
-      console.log(product.quantity, cartItem.quantity);
-
       if (Number(product.quantity) < Number(cartItem.quantity)) {
         throw new BadRequestException(
           `Not enough stock for product: ${product.name}`,
@@ -210,6 +210,12 @@ export class UsersService {
     user.orderHistory.push(order);
     user.cart = [];
     await user.save();
+
+    await this.emailSenderService.sendTextToEmail(
+      user.email,
+      "Order History",
+      order
+    );
 
     return {
       message: 'Order placed successfully',
