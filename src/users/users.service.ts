@@ -150,14 +150,25 @@ export class UsersService {
       throw new BadRequestException('Removal quantity exceeds cart quantity');
     }
 
-    if (quantity === cartItem.quantity) {
+    // Calculate new quantity
+    const newQuantity = Number(cartItem.quantity) - quantity;
+
+    // Remove item if quantity is 0 or less
+    if (newQuantity <= 0) {
       user.cart.splice(cartItemIndex, 1);
     } else {
-      cartItem.quantity = (Number(cartItem.quantity) - quantity).toString();
+      cartItem.quantity = newQuantity.toString();
     }
 
+    // Filter out any items with 0 or negative quantity (additional safety check)
+    user.cart = user.cart.filter((item) => Number(item.quantity) > 0);
+
     await user.save();
-    return { message: 'Product removed from cart', data: user.cart };
+
+    return {
+      message: 'Product removed from cart',
+      data: user.cart,
+    };
   }
 
   async checkout(userId: string) {
@@ -213,8 +224,8 @@ export class UsersService {
 
     await this.emailSenderService.sendTextToEmail(
       user.email,
-      "Order History",
-      order
+      'Order History',
+      order,
     );
 
     return {
