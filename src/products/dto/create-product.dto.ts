@@ -18,11 +18,11 @@ export class CreateProductDto {
   category: string;
 
   @IsString()
-  @IsOptional() 
+  @IsOptional()
   description: string;
 
   @IsString()
-  @IsOptional() 
+  @IsOptional()
   image: string;
 
   imageData?: any;

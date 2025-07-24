@@ -34,7 +34,7 @@ export class AuthController {
 
   @Get('/current-user')
   @UseGuards(AuthGuard)
-  getCuttentUser(@Req() request) {
+  getCuttentUser(@Req() request: { userId: string }) {
     const userId = request.userId;
     return this.authService.getCurrentUser(userId);
   }

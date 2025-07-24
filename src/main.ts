@@ -5,7 +5,11 @@ import { ValidationPipe } from '@nestjs/common';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors({
-    origin: ['http://localhost:5173', 'http://localhost:4200', 'https://e-commerce-angular-full.netlify.app'],
+    origin: [
+      'http://localhost:5173',
+      'http://localhost:4200',
+      'https://e-commerce-angular-full.netlify.app',
+    ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });

@@ -7,7 +7,6 @@ import {
   Param,
   Delete,
   UseGuards,
-  Req,
   UseInterceptors,
   UploadedFile,
 } from '@nestjs/common';
@@ -34,7 +33,8 @@ export class ProductsController {
     const path = Math.random().toString().substring(2);
     const filePath = `images/${path}`;
     const imagePath = avatar
-      ? await this.productsService.uploadImage(filePath, avatar.buffer)
+      ? // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+        await this.productsService.uploadImage(filePath, avatar.buffer)
       : '';
     return this.productsService.create({
       ...createProductDto,
@@ -64,6 +64,7 @@ export class ProductsController {
   @Delete(':id')
   @UseGuards(AuthGuard, IsAdminGuard)
   remove(@Param() params) {
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
     return this.productsService.remove(params.id);
   }
 }

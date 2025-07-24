@@ -15,11 +15,8 @@ export class AuthService {
   async signUp(signUpDto: SignUpDto) {
     const existUser = await this.usersService.findOneByEmail(signUpDto.email);
     if (existUser) throw new BadRequestException('User already exists');
-    const hashedPass: string = await (
-      bcrypt as unknown as {
-        hash: (password: string, salt: number) => Promise<string>;
-      }
-    ).hash(signUpDto.password, 10);
+
+    const hashedPass = await bcrypt.hash(signUpDto.password, 10);
     await this.usersService.create({ ...signUpDto, password: hashedPass });
     return { message: 'User created successfully' };
   }
@@ -29,18 +26,22 @@ export class AuthService {
     console.log(existUser);
 
     if (!existUser)
-      throw new BadRequestException('Email or passwor is not correct');
-    const isPassEqual: boolean = (await bcrypt.compare(
+      throw new BadRequestException('Email or password is not correct');
+
+    const isPassEqual = await bcrypt.compare(
       signInDto.password,
       existUser.password,
-    )) as boolean;
+    );
+
     if (!isPassEqual)
-      throw new BadRequestException('Email or passwor is not correct');
+      throw new BadRequestException('Email or password is not correct');
+
     const payload = {
       userId: existUser._id,
       role: existUser.role,
     };
-    const accessToken = await this.jwtService.sign(payload, {
+
+    const accessToken = this.jwtService.sign(payload, {
       expiresIn: '1h',
     });
 

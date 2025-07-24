@@ -10,7 +10,7 @@ import { EmailSenderModule } from 'src/email-sender/email-sender.module';
   imports: [
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     ProductsModule,
-    EmailSenderModule
+    EmailSenderModule,
   ],
   controllers: [UsersController],
   providers: [UsersService],

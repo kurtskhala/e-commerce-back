@@ -9,7 +9,6 @@ import { ProductsModule } from './products/products.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { EmailSenderModule } from './email-sender/email-sender.module';
 
-
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -20,12 +19,12 @@ import { EmailSenderModule } from './email-sender/email-sender.module';
         port: 465,
         auth: {
           user: process.env.EMAIL_USER,
-          pass: process.env.EMAIL_PASS
-        }
+          pass: process.env.EMAIL_PASS,
+        },
       },
       defaults: {
         from: '"Your Store" <kurtskhalia99@gmail.com>',
-      }
+      },
     }),
     AuthModule,
     UsersModule,

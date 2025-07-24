@@ -1,15 +1,27 @@
 import { MailerService } from '@nestjs-modules/mailer';
-import {
-  BadGatewayException,
-  BadRequestException,
-  Injectable,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
+
+interface OrderItem {
+  name: string;
+  quantity: number;
+  price: number;
+}
+
+interface Order {
+  date: string;
+  total: number;
+  items: OrderItem[];
+}
 
 @Injectable()
 export class EmailSenderService {
   constructor(private emailService: MailerService) {}
 
-  async sendTextToEmail(to: string, subject: string, order: any) {
+  async sendTextToEmail(
+    to: string,
+    subject: string,
+    order: Order,
+  ): Promise<string> {
     const orderDetailsHtml = `
       <h2>Order Details</h2>
       <p><strong>Date:</strong> ${new Date(order.date).toLocaleString()}</p>
@@ -33,7 +45,7 @@ export class EmailSenderService {
       from: 'Store <nkurt17@freeuni.edu.ge>',
       to,
       subject,
-      html: orderDetailsHtml, // Use html instead of text for formatted emails
+      html: orderDetailsHtml,
     };
 
     await this.emailService.sendMail(options);

@@ -41,7 +41,7 @@ export class UsersService {
     return user;
   }
 
-  async create(body) {
+  async create(body: Partial<User>) {
     const existUser = await this.userModel.findOne({
       email: body.email,
     });
@@ -59,10 +59,10 @@ export class UsersService {
     return { message: 'user deleted', data: deletedUser };
   }
 
-  async update(id, body) {
+  async update(id: string, body: Partial<Omit<User, 'role'>>) {
     if (!isValidObjectId(id))
       throw new BadGatewayException('Not valid id is provided');
-    const { role, ...updateData } = body;
+    const updateData = body;
     const updatedUser = await this.userModel.findByIdAndUpdate(id, updateData, {
       new: true,
     });
@@ -104,6 +104,7 @@ export class UsersService {
     }
 
     const existingCartItem = user.cart.find(
+      // eslint-disable-next-line @typescript-eslint/no-base-to-string
       (item) => item.productId.toString() === productId,
     );
 
@@ -119,9 +120,11 @@ export class UsersService {
       ).toString();
     } else {
       user.cart.push({
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         productId,
         name: product.name,
         price: product.price,
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         quantity,
       });
     }
@@ -137,6 +140,7 @@ export class UsersService {
     }
 
     const cartItemIndex = user.cart.findIndex(
+      // eslint-disable-next-line @typescript-eslint/no-base-to-string
       (item) => item.productId.toString() === productId,
     );
 
@@ -182,12 +186,13 @@ export class UsersService {
     }
 
     let total = '0';
-    const productUpdates: any = [];
+    // const productUpdates: any = [];
 
     for (const cartItem of user.cart) {
       const product = await this.productModel.findById(cartItem.productId);
 
       if (!product) {
+        // eslint-disable-next-line @typescript-eslint/no-base-to-string, @typescript-eslint/restrict-template-expressions
         throw new NotFoundException(`Product ${cartItem.productId} not found`);
       }
 

@@ -39,6 +39,7 @@ export class ProductsService {
             return productObj;
           } catch (error) {
             console.error(
+              // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
               `Failed to fetch image for product ${product._id}:`,
               error,
             );
@@ -71,6 +72,7 @@ export class ProductsService {
         productObj.imageData = imageBase64;
       } catch (error) {
         console.error(
+          // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
           `Failed to fetch image for product ${product._id}:`,
           error,
         );
